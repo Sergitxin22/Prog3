@@ -1,10 +1,51 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class ExpresionesLambda {
 
-    public static void main(String[] args) {
+    public static String unir(List<String> lista) {
+        StringBuilder stringBuilder = new StringBuilder();
 
-        // en Java 8 debemos crear la lista de esta forma
+        String delimitador = "";
+        
+        for (String str : lista) {
+            stringBuilder.append(delimitador);
+            stringBuilder.append(str.toUpperCase());
+
+            delimitador = ", ";
+        }
+
+        return stringBuilder.toString();
+    }
+
+    public static String unirInterface(List<String> lista, Conversor conversor) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        String delimitador = "";
+        
+        for (String str : lista) {
+            stringBuilder.append(delimitador);
+            // ahora es el objeto recibido el que decide la conversión
+            stringBuilder.append(conversor.convertir(str));
+
+            delimitador = ", ";
+        }
+
+        return stringBuilder.toString();
+    }
+
+    public static void main(String[] args) {
+    
+        // este código únicamente funciona a partir de Java 9
+/*     private List<String> lista = List.of(
+        "Broccoli",
+        "Onions",
+        "Mushrooms",
+        "Tomatoes",
+        "Peppers"
+    ); */
+
+        List<String> lista = new ArrayList<String>();
         lista.add("Broccoli");
         lista.add("Onions");
         lista.add("Mushrooms");
@@ -24,7 +65,8 @@ public class ExpresionesLambda {
         // funciona correctamente imprimiendo el resultado
         // por pantalla.
 
-
+        String resultado = unir(lista);
+        System.out.println(resultado);
 
         // 2. Ahora implementa un nuevo método, similar al anterior,
         // pero que permita especificar la operación a realizar
@@ -38,14 +80,32 @@ public class ExpresionesLambda {
 
         // La interfaz Conversor se implementa en la propia llamada
         // donde se necesita como una clase anómima.
-        
+        String mayusculas = unirInterface(lista, new Conversor(){
 
+            @Override
+            public String convertir(String str) {
+                return str.toUpperCase();
+            }
+            
+        });
+
+        System.out.println(mayusculas);
 
         // Ahora vamos a hacerlo en dos partes, lo que suele ser
         // útil si vamos a reutilizar la implementación de la interfaz
         // en otras llamadas.
 
+        Conversor aMinusculas = new Conversor() {
 
+            @Override
+            public String convertir(String str) {
+                return str.toLowerCase();
+            }
+            
+        };
+
+        String minusculas = unirInterface(lista, aMinusculas);
+        System.out.println(minusculas);
 
         // 3. Ahora vuelve a realizar la llamada al último método que
         // has añadido, pero usando expresiones lambda.
@@ -59,11 +119,20 @@ public class ExpresionesLambda {
         // que devuelve un String. Esto es compatible con la interfaz Conversor,
         // por eso podemos pasarla en dicho lugar de la llamada.
         
-        
+        minusculas = unirInterface(lista, s -> s.toLowerCase());
+        System.out.println(minusculas);
+
+        mayusculas = unirInterface(lista, s -> s.toUpperCase());
+        System.out.println(mayusculas);
+
 
         // 4. Substituye las expresiones lambda anteriores por referencias a 
         // métodos.
 
-        
+        minusculas = unirInterface(lista, String::toLowerCase);
+        System.out.println(minusculas);
+
+        mayusculas = unirInterface(lista, String::toUpperCase);
+        System.out.println(mayusculas);
     }
 }
